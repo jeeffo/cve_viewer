@@ -1,0 +1,47 @@
+name: Refresh CVE Dashboard
+
+on:
+  schedule:
+    - cron: '17 */4 * * *'  # every 4 hours at :17
+  workflow_dispatch:        # allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout cve_viewer
+        uses: actions/checkout@v4
+
+      - name: Shallow-clone cvelistV5
+        run: |
+          git clone --depth 1 https://github.com/CVEProject/cvelistV5.git cvelistV5
+
+      - name: Restore CVE cache
+        uses: actions/cache@v4
+        with:
+          path: cve_cache.json
+          key: cve-cache-${{ github.run_id }}
+          restore-keys: cve-cache-
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run refresh script
+        run: bash refresh_dashboard.sh
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cve_dashboard.html cve_vendor_daily.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: refresh CVE dashboard $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi

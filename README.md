@@ -131,10 +131,8 @@ cve_viewer/
 ├── cve_dashboard.html          # Self-contained dashboard (HTML + CSS + JS + embedded data)
 ├── extract_daily.py            # Python script to extract and aggregate CVE data
 ├── refresh_dashboard.sh        # Shell script to re-extract data and update the dashboard
-├── cve_vendor_daily.json       # Generated intermediate data file (not checked in)
-├── cve_cache.json              # Generated file-level parse cache (not checked in)
-├── cve_summary.json            # Generated yearly summary data (not checked in)
-├── extract_cve_data.py         # Yearly aggregation script (used to generate cve_summary.json)
+├── cve_vendor_daily.json       # Generated intermediate data file
+├── cve_cache.json              # Generated file-level parse cache
 ├── .gitignore
 ├── README.md
 └── cvelistV5/                  # Clone of the CVE list repository (git-ignored)
@@ -167,4 +165,3 @@ These are produced by the extraction scripts and should not be edited manually:
 
 - `cve_vendor_daily.json` — Tiered vendor/product data (daily, weekly, monthly, quarterly)
 - `cve_cache.json` — Parse cache mapping file paths to extracted CVE data with modification timestamps
-- `cve_summary.json` — Yearly aggregation across all years (used by the original yearly dashboard, not the current one)
