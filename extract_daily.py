@@ -9,7 +9,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 CVE_DIR = SCRIPT_DIR / "cvelistV5" / "cves"
-OUTPUT_FILE = SCRIPT_DIR / "cve_vendor_daily.json"
+OUTPUT_FILE = SCRIPT_DIR / "cve_data.js"
 CACHE_FILE = SCRIPT_DIR / "cve_cache.json"
 
 CUTOFF_DAYS = 400
@@ -308,6 +308,7 @@ def main():
             "earliestDate": earliest_date,
             "latestDate": latest_date,
             "vendorCount": len(sorted_vendors),
+            "generatedAt": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
         },
         "vendors": [[name, count] for name, count in sorted_vendors],
         "products": product_list,
@@ -345,7 +346,9 @@ def main():
             output["records"][str(vi)] = recs
 
     with open(OUTPUT_FILE, "w") as f:
+        f.write("const DATA = ")
         json.dump(output, f, separators=(",", ":"))
+        f.write(";")
 
     file_size = os.path.getsize(OUTPUT_FILE)
     cache_size = os.path.getsize(CACHE_FILE)

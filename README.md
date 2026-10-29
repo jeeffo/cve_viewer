@@ -4,7 +4,7 @@ A self-contained HTML dashboard for comparing published CVEs across vendors and 
 
 ## Opening the dashboard
 
-Open `cve_dashboard.html` in any modern browser. No server required — all data is embedded inline. The file is fully self-contained (HTML + CSS + JS + embedded JSON data).
+Open `cve_dashboard.html` in any modern browser. No server required — data is loaded from `cve_data.js` in the same directory.
 
 ## Features
 
@@ -85,10 +85,7 @@ git -C cvelistV5 pull
 ./refresh_dashboard.sh
 ```
 
-This runs two steps:
-
-1. **`extract_daily.py`** — Scans all CVE JSON files in `cvelistV5/`, extracts vendor, product, CVSS score, and severity, and writes `cve_vendor_daily.json`.
-2. **Data injection** — Replaces the embedded JSON in `cve_dashboard.html` with the updated data.
+This runs `extract_daily.py`, which scans all CVE JSON files in `cvelistV5/`, extracts vendor, product, CVSS score, and severity, and writes `cve_data.js`.
 
 ### Caching
 
@@ -109,7 +106,7 @@ Individual CVE records (for the detail table) are only available in the daily ti
 
 ### What the extraction produces
 
-`cve_vendor_daily.json` contains:
+`cve_data.js` contains a single `const DATA = {...}` assignment with:
 
 | Key | Description |
 |-----|-------------|
@@ -128,10 +125,10 @@ Each CVE record is: `[cveId, date, [productIndices], severityIndex, score]`
 
 ```
 cve_viewer/
-├── cve_dashboard.html          # Self-contained dashboard (HTML + CSS + JS + embedded data)
+├── cve_dashboard.html          # Dashboard (HTML + CSS + JS, loads data from cve_data.js)
+├── cve_data.js                 # Generated data file (loaded by the dashboard)
 ├── extract_daily.py            # Python script to extract and aggregate CVE data
-├── refresh_dashboard.sh        # Shell script to re-extract data and update the dashboard
-├── cve_vendor_daily.json       # Generated intermediate data file
+├── refresh_dashboard.sh        # Shell script to re-extract data
 ├── cve_cache.json              # Generated file-level parse cache
 ├── .gitignore
 ├── README.md
@@ -153,9 +150,9 @@ cve_viewer/
 | File | Purpose |
 |------|---------|
 | `cve_dashboard.html` | The dashboard — open in a browser, no server needed |
+| `cve_data.js` | Generated tiered data loaded by the dashboard at runtime |
 | `extract_daily.py` | Extracts and caches vendor/product/severity data from all CVE JSON files |
-| `refresh_dashboard.sh` | Runs extraction and injects updated data into the dashboard |
-| `cve_vendor_daily.json` | Intermediate tiered data produced by `extract_daily.py` |
+| `refresh_dashboard.sh` | Runs extraction to regenerate `cve_data.js` |
 | `cve_cache.json` | File-level parse cache for incremental extraction |
 | `cvelistV5/` | Git clone of [CVEProject/cvelistV5](https://github.com/CVEProject/cvelistV5) |
 
@@ -163,5 +160,5 @@ cve_viewer/
 
 These are produced by the extraction scripts and should not be edited manually:
 
-- `cve_vendor_daily.json` — Tiered vendor/product data (daily, weekly, monthly, quarterly)
+- `cve_data.js` — Tiered vendor/product data (daily, weekly, monthly, quarterly)
 - `cve_cache.json` — Parse cache mapping file paths to extracted CVE data with modification timestamps
