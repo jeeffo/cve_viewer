@@ -327,9 +327,7 @@ const GROUP_RANK={daily:0,weekly:1,monthly:2,quarterly:3,yearly:4};
 function enforceGroupingBounds(startStr,endStr){
   const min=getMinGrouping(startStr);
   const max=getMaxGrouping(startStr,endStr);
-  if(GROUP_RANK[state.group]<GROUP_RANK[min]){state.group=min;}
-  if(GROUP_RANK[state.group]>GROUP_RANK[max]){state.group=max;}
-  if(GROUP_RANK[min]>GROUP_RANK[max]){state.group=min;}
+  state.group=GROUP_RANK[max]>=GROUP_RANK[min]?max:min;
   refreshPills();
 }
 
@@ -1014,7 +1012,7 @@ function renderChips(){
 
 
 buildRangePills(); buildGroupPills(); buildSevToggles(); buildSearch(); buildCustomRange();
-refreshPills();
+const {startStr:_initS,endStr:_initE}=getDateRange(); enforceGroupingBounds(_initS,_initE);
 state.selected=['Arista Networks','Cisco','Hewlett Packard Enterprise (HPE)','Juniper Networks'].filter(n=>vendorNameToIdx[n]!==undefined);
 state.activeTab=state.selected[0];
 renderChips(); renderAll();
