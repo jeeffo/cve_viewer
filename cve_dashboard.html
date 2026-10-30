@@ -319,7 +319,7 @@ function getMaxGrouping(startStr,endStr){
   const span=Math.round((parseDate(endStr)-parseDate(startStr))/(864e5));
   if(span>=365) return 'yearly';
   if(span>=90) return 'quarterly';
-  if(span>=28) return 'monthly';
+  if(span>=31) return 'monthly';
   if(span>=7) return 'weekly';
   return 'daily';
 }
